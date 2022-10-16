@@ -3,6 +3,7 @@ const app = express()
 const port = 3000
 
 app.use('/api', require('./controllers/phase'));
+app.use('/api', require('./controllers/post'));
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
