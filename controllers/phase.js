@@ -33,13 +33,12 @@ api_phase.get('/phases/:phase_id', (req, res) => {
     let phase_id = req.params.phase_id
 
     conn.query(`select * from phases where id = ${phase_id}`, (err, rows, fields) => {
-        if (err) {
+        if (err)
             res.status(500).json({ error: err })
-        }
-        if (rows.length)
-            res.json(rows[0])
-        else
+        else if (rows.length == 0)
             res.status(400).json({ error: "id not exist" })
+        else
+            res.json(rows[0])
     })
 })
 
@@ -53,7 +52,7 @@ api_phase.put('/phases/:phase_id', (req, res) => {
         if (err)
             res.status(500).json({ error: err })
         else
-            res.status(200).json({})
+            res.status(200).json()
     })
 })
 
