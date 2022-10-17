@@ -32,10 +32,10 @@ api_post.post('/users/:user_id/posts', (req, res) => {
     let phase_id = req.body.phase_id
     let position_id = req.body.position_id
     let date = req.body.date
-    let desc = req.body.desc ?? ""
+    let description = req.body.description ?? ""
 
     let sql = `insert into posts (phase_id, user_id, position_id, date, description)
-    values (${phase_id}, ${user_id}, ${position_id}, "${date}", "${desc}")`
+    values (${phase_id}, ${user_id}, ${position_id}, "${date}", "${description}")`
 
     conn.query(sql, (err, rows, fields) => {
         if (err)
@@ -87,10 +87,10 @@ api_post.put('/posts/:post_id', (req, res) => {
     let phase_id = req.body.phase_id
     let position_id = req.body.position_id
     let date = req.body.date
-    let desc = req.body.desc ?? ""
+    let description = req.body.description ?? ""
 
     let sql = `update posts set phase_id=${phase_id}, position_id=${position_id}, 
-    date="${date}", description="${desc}" where id=${post_id}`
+    date="${date}", description="${description}" where id=${post_id}`
 
     conn.query(sql, (err, rows, fields) => {
         if (err)
