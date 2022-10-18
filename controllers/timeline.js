@@ -33,4 +33,74 @@ api_timeline.get('/users/:user_id/timelines', (req, res) => {
     })
 })
 
+api_timeline.get('/positions/:position_id/timeline', (req, res) => {
+    let position_id = req.params.position_id
+
+    let sql = `select * from posts where position_id = ${position_id} order by user_id, date`
+
+    conn.query(sql, (err, rows, fields) => {
+        if (err)
+            res.status(500).json({ error: err })
+        else {
+            let user_tls = []
+            let longest_tl_idx = 0
+            rows.forEach((row, idx) => {
+                if (user_tls.length == 0 || row.user_id != user_tls[user_tls.length - 1].user_id) {
+                    if (user_tls.length > 0 && user_tls[user_tls.length - 1].posts.length > user_tls[longest_tl_idx].posts.length)
+                        longest_tl_idx = idx
+                    user_tls.push({ user_id: row.user_id, posts: [] })
+                }
+                user_tls[user_tls.length - 1].posts.push(row)
+            })
+            let phases = []
+            user_tls[longest_tl_idx].posts.forEach((post) => {
+                phases.push({ phase_id: post.phase_id, total: 0, dates: [], durations: [] })
+            })
+            user_tls.forEach((tl) => {
+                let phase_idx = 0
+                tl.posts.every((post, post_idx, posts) => {
+                    while (phase_idx < phases.length && phases[phase_idx].phase_id != post.phase_id)
+                        phase_idx++
+                    if (phase_idx >= phases.length)
+                        return false
+                    phases[phase_idx].total++
+                    phases[phase_idx].dates.push(post.date)
+                    if (post_idx + 1 < posts.length)
+                        phases[phase_idx].durations.push(Date.parse(posts[post_idx + 1].date) - Date.parse(post.date))
+                    phase_idx++
+                    return true
+                })
+            })
+            phases.forEach((phase, idx) => {
+                if (idx + 1 < phases.length) {
+                    phase.pass_cnt = phases[idx + 1].total
+                    phase.pass_rate = phase.pass_cnt / phase.total
+                }
+                let dates = phase.dates
+                dates.sort((a, b) => Date.parse(a) - Date.parse(b))
+                phase.date = {}
+                phase.date.min = dates[0].toISOString().slice(0, 10)
+                phase.date.max = dates[dates.length - 1].toISOString().slice(0, 10)
+                if (dates.length % 2 == 1)
+                    phase.date.mid = dates[dates.length / 2].toISOString().slice(0, 10)
+                else
+                    phase.date.mid = new Date((Date.parse(dates[dates.length / 2 - 1]) + Date.parse(dates[dates.length / 2])) / 2).toISOString().slice(0, 10)
+                phase.durations.sort()
+                if (phase.durations.length > 0) {
+                    phase.duration = {}
+                    phase.duration.min = phase.durations[0] / 86400 / 1000
+                    phase.duration.max = phase.durations[phase.durations.length - 1] / 86400 / 1000
+                    if (phase.durations.length % 2 == 1)
+                        phase.duration.mid = phase.durations[phase.durations.length / 2] / 86400 / 1000
+                    else
+                        phase.duration.mid = (phase.durations[phase.durations.length / 2 - 1] + phase.durations[phase.durations.length / 2]) / 2 / 86400 / 1000
+                }
+                delete phase.dates
+                delete phase.durations
+            })
+            res.json({ phases: phases })
+        }
+    })
+})
+
 module.exports = api_timeline;
