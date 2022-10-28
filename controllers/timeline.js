@@ -21,14 +21,19 @@ api_timeline.get('/users/:user_id/timelines', (req, res) => {
             let data = []
             rows.forEach((row) => {
                 if (data.length == 0 || row.position_id != data[data.length - 1].position_id) {
-                    data.push({ position_id: row.position_id, posts: [] })
+                    data.push({ position_id: row.position_id, posts: [], links: { position: `/positions/${row.position_id}` } })
                 }
                 delete row.user_id
                 delete row.position_id
                 delete row.max_date
+                row.links = {
+                    phase: `/phases/${row.phase_id}`,
+                    user: `/users/${row.user_id}`,
+                    position: `/positions/${row.position_id}`
+                }
                 data[data.length - 1].posts.push(row)
             })
-            res.json(data)
+            res.json({ timelines: data })
         }
     })
 })
@@ -97,6 +102,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                 }
                 delete phase.dates
                 delete phase.durations
+                phase.links = { phase: `/phases/${phase.phase_id}` }
             })
             res.json({ phases: phases })
         }

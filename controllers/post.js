@@ -19,10 +19,37 @@ api_post.get('/users/:user_id/posts', (req, res) => {
     sql += ` limit ${limit} offset ${offset}`
 
     conn.query(sql, (err, rows, fields) => {
-        if (err)
+        if (err) {
             res.status(500).json({ error: err })
-        else
-            res.json(rows)
+            return
+        }
+
+        rows.forEach((post) => {
+            post.links = {
+                phase: `/phases/${post.phase_id}`,
+                user: `/users/${post.user_id}`,
+                position: `/positions/${post.position_id}`
+            }
+        });
+        // total count
+        let sql_total = `select count(*) as total from posts where user_id = ${user_id}`
+        if (position_id) sql_total += ` and position_id = ${position_id}`
+        // else if (company_id) sql += ` and company_id = ${company_id}`
+        conn.query(sql_total, (err1, totals, fields) => {
+            if (err1) {
+                res.status(500).json({ error: err1 })
+                return
+            }
+
+            let total = totals[0].total
+            res.json({
+                posts: rows,
+                links: {
+                    next: (offset + 1) * limit < total ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset + 1}&limit=${limit}` : '',
+                    prev: offset > 0 ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset - 1}&limit=${limit}` : ''
+                }
+            })
+        })
     })
 })
 
@@ -58,10 +85,37 @@ api_post.get('/posts', (req, res) => {
     sql += ` limit ${limit} offset ${offset}`
 
     conn.query(sql, (err, rows, fields) => {
-        if (err)
+        if (err) {
             res.status(500).json({ error: err })
-        else
-            res.json(rows)
+            return
+        }
+
+        rows.forEach((post) => {
+            post.links = {
+                phase: `/phases/${post.phase_id}`,
+                user: `/users/${post.user_id}`,
+                position: `/positions/${post.position_id}`
+            }
+        });
+        // total count
+        let sql_total = `select count(*) as total from posts`
+        if (position_id) sql_total += ` where position_id = ${position_id}`
+        // else if (company_id) sql += ` and company_id = ${company_id}`
+        conn.query(sql_total, (err1, totals, fields) => {
+            if (err1) {
+                res.status(500).json({ error: err1 })
+                return
+            }
+
+            let total = totals[0].total
+            res.json({
+                posts: rows,
+                links: {
+                    next: (offset + 1) * limit < total ? `/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset + 1}&limit=${limit}` : '',
+                    prev: offset > 0 ? `/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset - 1}&limit=${limit}` : ''
+                }
+            })
+        })
     })
 })
 
@@ -75,8 +129,15 @@ api_post.get('/posts/:post_id', (req, res) => {
             res.status(500).json({ error: err })
         else if (rows.length == 0)
             res.status(400).json({ error: "id not exist" })
-        else
-            res.json(rows[0])
+        else {
+            let post = rows[0]
+            post.links = {
+                phase: `/phases/${post.phase_id}`,
+                user: `/users/${post.user_id}`,
+                position: `/positions/${post.position_id}`
+            }
+            res.json(post)
+        }
     })
 })
 
