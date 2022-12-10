@@ -1,6 +1,12 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const cors = require('cors');
+
+
+app.use(cors({
+    origin: '*'
+}));
 
 app.use('/api', require('./controllers/phase'));
 app.use('/api', require('./controllers/post'));
