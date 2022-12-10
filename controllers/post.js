@@ -6,11 +6,11 @@ var api_post = express.Router()
 api_post.use(express.json())
 
 api_post.get('/users/:user_id/posts', (req, res) => {
-    let user_id = req.params.user_id
-    let company_id = req.query.company_id ?? 0
-    let position_id = req.query.position_id ?? 0
-    let page = Number(req.query.page) ?? 1
-    let limit = Number(req.query.limit) ?? 25
+    let user_id = Number(req.params.user_id)
+    let company_id = req.query.company_id ?? ''
+    let position_id = req.query.position_id ?? ''
+    let page = Number(req.query.page ?? 1)
+    let limit = Number(req.query.limit ?? 25)
 
     let sql = `select * from posts where user_id = ${user_id}`
     if (position_id) sql += ` and position_id = ${position_id}`
@@ -73,10 +73,10 @@ api_post.post('/users/:user_id/posts', (req, res) => {
 })
 
 api_post.get('/posts', (req, res) => {
-    let company_id = req.query.company_id ?? 0
-    let position_id = req.query.position_id ?? 0
-    let page = Number(req.query.page) ?? 1
-    let limit = Number(req.query.limit) ?? 25
+    let company_id = req.query.company_id ?? ''
+    let position_id = req.query.position_id ?? ''
+    let page = Number(req.query.page ?? 1)
+    let limit = Number(req.query.limit ?? 25)
 
     let sql = `select * from posts`
     if (position_id) sql += ` where position_id = ${position_id}`
