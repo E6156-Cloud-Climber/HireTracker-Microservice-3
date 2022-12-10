@@ -9,14 +9,14 @@ api_post.get('/users/:user_id/posts', (req, res) => {
     let user_id = req.params.user_id
     let company_id = req.query.company_id ?? 0
     let position_id = req.query.position_id ?? 0
-    let offset = req.query.offset ?? 0
-    let limit = req.query.limit ?? 25
+    let page = Number(req.query.page) ?? 1
+    let limit = Number(req.query.limit) ?? 25
 
     let sql = `select * from posts where user_id = ${user_id}`
     if (position_id) sql += ` and position_id = ${position_id}`
     // else if (company_id) sql += ` and company_id = ${company_id}`
     sql += ` order by id desc`
-    sql += ` limit ${limit} offset ${offset}`
+    sql += ` limit ${limit} offset ${limit * (page - 1)}`
 
     conn.query(sql, (err, rows, fields) => {
         if (err) {
@@ -45,8 +45,8 @@ api_post.get('/users/:user_id/posts', (req, res) => {
             res.json({
                 posts: rows,
                 links: {
-                    next: (offset + 1) * limit < total ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset + 1}&limit=${limit}` : '',
-                    prev: offset > 0 ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset - 1}&limit=${limit}` : ''
+                    next: page * limit < total ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&page=${page + 1}&limit=${limit}` : '',
+                    prev: page > 1 ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&page=${page - 1}&limit=${limit}` : ''
                 }
             })
         })
@@ -75,14 +75,14 @@ api_post.post('/users/:user_id/posts', (req, res) => {
 api_post.get('/posts', (req, res) => {
     let company_id = req.query.company_id ?? 0
     let position_id = req.query.position_id ?? 0
-    let offset = req.query.offset ?? 0
-    let limit = req.query.limit ?? 25
+    let page = Number(req.query.page) ?? 1
+    let limit = Number(req.query.limit) ?? 25
 
     let sql = `select * from posts`
     if (position_id) sql += ` where position_id = ${position_id}`
     // else if (company_id) sql += ` and company_id = ${company_id}`
     sql += ` order by id desc`
-    sql += ` limit ${limit} offset ${offset}`
+    sql += ` limit ${limit} offset ${limit * (page - 1)}`
 
     conn.query(sql, (err, rows, fields) => {
         if (err) {
@@ -111,8 +111,8 @@ api_post.get('/posts', (req, res) => {
             res.json({
                 posts: rows,
                 links: {
-                    next: (offset + 1) * limit < total ? `/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset + 1}&limit=${limit}` : '',
-                    prev: offset > 0 ? `/posts?company_id=${company_id}&position_id=${position_id}&offset=${offset - 1}&limit=${limit}` : ''
+                    next: page * limit < total ? `/posts?company_id=${company_id}&position_id=${position_id}&page=${page + 1}&limit=${limit}` : '',
+                    prev: page > 1 ? `/posts?company_id=${company_id}&position_id=${position_id}&page=${page - 1}&limit=${limit}` : ''
                 }
             })
         })
