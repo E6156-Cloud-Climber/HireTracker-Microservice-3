@@ -104,7 +104,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                 delete phase.durations
                 phase.links = { phase: `/phases/${phase.phase_id}` }
             })
-            res.json({ phases: phases })
+            res.json({ phases: phases, links: { position: `/positions/${position_id}` } })
         }
     })
 })
