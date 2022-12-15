@@ -44,6 +44,7 @@ api_post.get('/users/:user_id/posts', (req, res) => {
             let total = totals[0].total
             res.json({
                 posts: rows,
+                total: total,
                 links: {
                     next: page * limit < total ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&page=${page + 1}&limit=${limit}` : '',
                     prev: page > 1 ? `/users/${user_id}/posts?company_id=${company_id}&position_id=${position_id}&page=${page - 1}&limit=${limit}` : ''
@@ -110,6 +111,7 @@ api_post.get('/posts', (req, res) => {
             let total = totals[0].total
             res.json({
                 posts: rows,
+                total: total,
                 links: {
                     next: page * limit < total ? `/posts?company_id=${company_id}&position_id=${position_id}&page=${page + 1}&limit=${limit}` : '',
                     prev: page > 1 ? `/posts?company_id=${company_id}&position_id=${position_id}&page=${page - 1}&limit=${limit}` : ''
