@@ -76,6 +76,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                     return true
                 })
             })
+            try {
             phases.forEach((phase, idx) => {
                 if (idx + 1 < phases.length) {
                     phase.pass_cnt = phases[idx + 1].total
@@ -87,7 +88,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                 phase.date.min = dates[0].toISOString().slice(0, 10)
                 phase.date.max = dates[dates.length - 1].toISOString().slice(0, 10)
                 if (dates.length % 2 == 1)
-                    phase.date.mid = dates[dates.length / 2].toISOString().slice(0, 10)
+                    phase.date.mid = dates[Math.floor(dates.length / 2)].toISOString().slice(0, 10)
                 else
                     phase.date.mid = new Date((Date.parse(dates[dates.length / 2 - 1]) + Date.parse(dates[dates.length / 2])) / 2).toISOString().slice(0, 10)
                 phase.durations.sort()
@@ -105,6 +106,13 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                 phase.links = { phase: `/phases/${phase.phase_id}` }
             })
             res.json({ phases: phases, links: { position: `/positions/${position_id}` } })
+
+            }
+            catch (err) {
+                console.log(err)
+                console.log(phases)
+                res.status(500).json({ error: err })
+            }
         }
     })
 })
