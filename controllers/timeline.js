@@ -80,7 +80,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
             phases.forEach((phase, idx) => {
                 if (idx + 1 < phases.length) {
                     phase.pass_cnt = phases[idx + 1].total
-                    phase.pass_rate = phase.pass_cnt / phase.total
+                    phase.pass_rate = (phase.pass_cnt / phase.total).toFixed(4)
                 }
                 let dates = phase.dates
                 dates.sort((a, b) => Date.parse(a) - Date.parse(b))
