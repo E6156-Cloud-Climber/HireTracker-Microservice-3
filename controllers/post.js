@@ -82,7 +82,7 @@ api_post.get('/posts', (req, res) => {
     let sql = `select * from posts`
     if (position_id) sql += ` where position_id = ${position_id}`
     // else if (company_id) sql += ` and company_id = ${company_id}`
-    sql += ` order by id desc`
+    sql += ` order by updated_at desc`
     sql += ` limit ${limit} offset ${limit * (page - 1)}`
 
     conn.query(sql, (err, rows, fields) => {
