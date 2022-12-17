@@ -8,7 +8,7 @@ api_phase.use(express.json())
 api_phase.get('/phases', (req, res) => {
     let search_key = req.query.search_key ?? ""
 
-    conn.query(`select * from phases where name like '%${search_key}%'`, (err, rows, fields) => {
+    conn.query(`select * from phases where name like '%${search_key}%' order by id`, (err, rows, fields) => {
         if (err)
             res.status(500).json({ error: err })
         else
