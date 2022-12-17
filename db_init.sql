@@ -6,7 +6,7 @@ CREATE TABLE phases (
 CREATE TABLE posts (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   phase_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
+  user_id VARCHAR(256) NOT NULL,
   position_id INTEGER NOT NULL,
   date DATE NOT NULL,
   description VARCHAR(1000),
