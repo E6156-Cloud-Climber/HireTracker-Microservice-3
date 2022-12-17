@@ -6,7 +6,7 @@ var api_post = express.Router()
 api_post.use(express.json())
 
 api_post.get('/users/:user_id/posts', (req, res) => {
-    let user_id = Number(req.params.user_id)
+    let user_id = req.params.user_id
     let company_id = req.query.company_id ?? ''
     let position_id = req.query.position_id ?? ''
     let page = Number(req.query.page ?? 1)
