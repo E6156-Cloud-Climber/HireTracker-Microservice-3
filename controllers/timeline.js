@@ -97,7 +97,7 @@ api_timeline.get('/positions/:position_id/timeline', (req, res) => {
                     phase.duration.min = phase.durations[0] / 86400 / 1000
                     phase.duration.max = phase.durations[phase.durations.length - 1] / 86400 / 1000
                     if (phase.durations.length % 2 == 1)
-                        phase.duration.mid = phase.durations[phase.durations.length / 2] / 86400 / 1000
+                        phase.duration.mid = phase.durations[Math.floor(phase.durations.length / 2)] / 86400 / 1000
                     else
                         phase.duration.mid = (phase.durations[phase.durations.length / 2 - 1] + phase.durations[phase.durations.length / 2]) / 2 / 86400 / 1000
                 }
