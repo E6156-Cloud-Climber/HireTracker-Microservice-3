@@ -12,7 +12,7 @@ api_post.get('/users/:user_id/posts', (req, res) => {
     let page = Number(req.query.page ?? 1)
     let limit = Number(req.query.limit ?? 25)
 
-    let sql = `select * from posts where user_id = ${user_id}`
+    let sql = `select * from posts where user_id = "${user_id}"`
     if (position_id) sql += ` and position_id = ${position_id}`
     // else if (company_id) sql += ` and company_id = ${company_id}`
     sql += ` order by id desc`
@@ -32,7 +32,7 @@ api_post.get('/users/:user_id/posts', (req, res) => {
             }
         });
         // total count
-        let sql_total = `select count(*) as total from posts where user_id = ${user_id}`
+        let sql_total = `select count(*) as total from posts where user_id = "${user_id}"`
         if (position_id) sql_total += ` and position_id = ${position_id}`
         // else if (company_id) sql += ` and company_id = ${company_id}`
         conn.query(sql_total, (err1, totals, fields) => {
@@ -63,7 +63,7 @@ api_post.post('/users/:user_id/posts', (req, res) => {
     let description = req.body.description ?? ""
 
     let sql = `insert into posts (phase_id, user_id, position_id, date, description)
-    values (${phase_id}, ${user_id}, ${position_id}, "${date}", "${description}")`
+    values (${phase_id}, "${user_id}", ${position_id}, "${date}", "${description}")`
 
     conn.query(sql, (err, rows, fields) => {
         if (err)
